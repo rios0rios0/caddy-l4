@@ -1,7 +1,12 @@
-Project Conncept: a TCP/UDP app for Caddy
-=======================================
+<h1 align="center">Caddy L4</h1>
+<p align="center">
+    <a href="https://github.com/rios0rios0/caddy-l4/releases/latest">
+        <img src="https://img.shields.io/github/release/rios0rios0/caddy-l4.svg?style=for-the-badge&logo=github" alt="Latest Release"/></a>
+    <a href="https://github.com/rios0rios0/caddy-l4/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/rios0rios0/caddy-l4.svg?style=for-the-badge&logo=github" alt="License"/></a>
+</p>
 
-**Project Conncept** is an experimental layer 4 app for Caddy. It facilitates composable handling of raw TCP/UDP connections based on properties of the connection or the beginning of the stream.
+A fork of **Project Conncept**, an experimental Layer 4 app for [Caddy](https://caddyserver.com/). It facilitates composable handling of raw TCP/UDP connections based on properties of the connection or the beginning of the stream.
 
 With it, you can listen on sockets/ports and express logic such as:
 
@@ -13,30 +18,22 @@ With it, you can listen on sockets/ports and express logic such as:
 - "If the HTTP Host is `example.com` or the TLS ServerName is `example.com`, then proxy to 192.168.0.4."
 - "Block connections from these IP ranges: ..."
 - "Throttle data flow to simulate slow connections."
-- And much more!
 
-**⚠️ This app is very capable and flexible, but is still in development. Please expect breaking changes.**
+Because this is a Caddy app, it can be used alongside other Caddy apps such as the [HTTP server](https://caddyserver.com/docs/modules/http) or [TLS certificate manager](https://caddyserver.com/docs/modules/tls).
 
-Because this is a caddy app, it can be used alongside other Caddy apps such as the [HTTP server](https://caddyserver.com/docs/modules/http) or [TLS certificate manager](https://caddyserver.com/docs/modules/tls).
+## Features
 
-Note that only JSON config is available at this time. More documentation will come soon. For now, please read the code, especially type definitions and their comments. It's actually a pretty simple code base, and the JSON config isn't that bad once you get used to it! See below for tips and examples writing config.
+### Matchers
 
-
-## Introduction
-
-This app works similarly to the `http` app. You define servers, and each server consists of routes. A route has a set of matchers and handlers; if a connection matches, the assoicated handlers are invoked.
-
-Current matchers:
-
-- **layer4.matchers.http** - matches connections that start with HTTP requests. In addition, any [`http.matchers` modules](https://caddyserver.com/docs/modules/) can be used for matching on HTTP-specific properties of requests, such as header or path. Note that only the first request of each connection can be used for matching.
-- **layer4.matchers.tls** - matches connections that start with TLS handshakes. In addition, any [`tls.handshake_match` modules](https://caddyserver.com/docs/modules/) can be used for matching on TLS-specific properties of the ClientHello, such as ServerName (SNI).
+- **layer4.matchers.http** - matches connections that start with HTTP requests. Any [`http.matchers` modules](https://caddyserver.com/docs/modules/) can be used for matching on HTTP-specific properties such as header or path. Note that only the first request of each connection can be used for matching.
+- **layer4.matchers.tls** - matches connections that start with TLS handshakes. Any [`tls.handshake_match` modules](https://caddyserver.com/docs/modules/) can be used for matching on TLS-specific properties of the ClientHello, such as ServerName (SNI).
 - **layer4.matchers.ssh** - matches connections that look like SSH connections.
 - **layer4.matchers.ip** - matches connections based on remote IP (or CIDR range).
 - **layer4.matchers.proxy_protocol** - matches connections that start with [HAPROXY proxy protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt).
 - **layer4.matchers.socks4** - matches connections that look like [SOCKSv4](https://www.openssh.com/txt/socks4.protocol).
 - **layer4.matchers.socks5** - matches connections that look like [SOCKSv5](https://www.rfc-editor.org/rfc/rfc1928.html).
 
-Current handlers:
+### Handlers
 
 - **layer4.handlers.echo** - An echo server.
 - **layer4.handlers.proxy** - Powerful layer 4 proxy, capable of multiple upstreams (with load balancing and health checks) and establishing new TLS connections to backends. Optionally supports sending the [HAProxy proxy protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt).
@@ -48,13 +45,12 @@ Current handlers:
 
 Like the `http` app, some handlers are "terminal" meaning that they don't call the next handler in the chain. For example: `echo` and `proxy` are terminal handlers because they consume the client's input.
 
-
-## Compiling
+## Installation
 
 The recommended way is to use [xcaddy](https://github.com/caddyserver/xcaddy):
 
-```
-$ xcaddy build --with github.com/mholt/caddy-l4
+```bash
+xcaddy build --with github.com/mholt/caddy-l4
 ```
 
 Alternatively, to hack on the plugin code, you can clone it down, then build and run like so:
@@ -62,17 +58,13 @@ Alternatively, to hack on the plugin code, you can clone it down, then build and
 1. Download or clone this repo: `git clone https://github.com/mholt/caddy-l4.git`
 2. In the project folder, run `xcaddy` just like you would run `caddy`. For example: `xcaddy list-modules --versions` (you should see the `layer4` modules).
 
+## Configuration
 
-## Writing config
+Since this app does not support Caddyfile (yet?), you will have to use Caddy's native JSON format to configure it. The [caddy-json-schema plugin by @abiosoft](https://github.com/abiosoft/caddy-json-schema) can give you auto-complete and documentation right in your editor as you write your config.
 
-Since this app does not support Caddyfile (yet?), you will have to use Caddy's native JSON format to configure it. I highly recommend [this caddy-json-schema plugin by @abiosoft](https://github.com/abiosoft/caddy-json-schema) which can give you auto-complete and documentation right in your editor as you write your config!
+## Usage Examples
 
-See below for some examples to help you get started.
-
-
-## Config examples
-
-A simple echo server:
+### Simple Echo Server
 
 ```json
 {
@@ -95,8 +87,9 @@ A simple echo server:
 }
 ```
 
+### Echo Server with TLS Termination
 
-A simple echo server with TLS termination that uses a self-signed cert for `localhost`:
+Uses a self-signed cert for `localhost`:
 
 ```json
 {
@@ -132,7 +125,9 @@ A simple echo server with TLS termination that uses a self-signed cert for `loca
 }
 ```
 
-A simple TCP reverse proxy that terminates TLS on 993, and sends the PROXY protocol header to 1143 through 143:
+### TCP Reverse Proxy with TLS and PROXY Protocol
+
+Terminates TLS on 993, and sends the PROXY protocol header to 1143 through 143:
 
 ```json
 {
@@ -183,7 +178,9 @@ A simple TCP reverse proxy that terminates TLS on 993, and sends the PROXY proto
 }
 ```
 
-A multiplexer that proxies HTTP to one backend, and TLS to another (without terminating TLS):
+### HTTP/TLS Multiplexer
+
+Proxies HTTP to one backend, and TLS to another (without terminating TLS):
 
 ```json
 {
@@ -231,71 +228,7 @@ A multiplexer that proxies HTTP to one backend, and TLS to another (without term
 }
 ```
 
-Same as previous, but only applies to HTTP requests with specific hosts:
-
-```json
-{
-	"apps": {
-		"layer4": {
-			"servers": {
-				"example": {
-					"listen": ["127.0.0.1:5000"],
-					"routes": [
-						{
-							"match": [
-								{
-									"http": [
-										{"host": ["example.com"]}
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"match": [
-												{
-													"http": []
-												}
-											],
-											"handle": [
-												{
-													"handler": "proxy",
-													"upstreams": [
-														{"dial": ["localhost:80"]}
-													]
-												}
-											]
-										},
-										{
-											"match": [
-												{
-													"tls": {}
-												}
-											],
-											"handle": [
-												{
-													"handler": "proxy",
-													"upstreams": [
-														{"dial": ["localhost:443"]}
-													]
-												}
-											]
-										}
-									]
-								}
-							]
-						}
-					]
-				}
-			}
-		}
-	}
-}
-```
-
-Same as previous, but filter by HTTP Host header and/or TLS ClientHello ServerName:
+### HTTP Host and TLS SNI Filtering
 
 ```json
 {
@@ -347,9 +280,9 @@ Same as previous, but filter by HTTP Host header and/or TLS ClientHello ServerNa
 }
 ```
 
+### SOCKS4/5 Proxy with IP Filtering and Authentication
 
-Forwarding SOCKSv4 to a remote server and handling SOCKSv5 directly in caddy.  
-While only allowing connections from a specific network and requiring a username and password for SOCKSv5.
+Forwards SOCKSv4 to a remote server and handles SOCKSv5 directly in Caddy, while only allowing connections from a specific network and requiring a username and password for SOCKSv5:
 
 ```json
 {
@@ -397,3 +330,11 @@ While only allowing connections from a specific network and requiring a username
 	}
 }
 ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+See [LICENSE](LICENSE) for details.
