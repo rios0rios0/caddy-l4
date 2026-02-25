@@ -4,6 +4,8 @@
         <img src="https://img.shields.io/github/release/rios0rios0/caddy-l4.svg?style=for-the-badge&logo=github" alt="Latest Release"/></a>
     <a href="https://github.com/rios0rios0/caddy-l4/blob/main/LICENSE">
         <img src="https://img.shields.io/github/license/rios0rios0/caddy-l4.svg?style=for-the-badge&logo=github" alt="License"/></a>
+    <a href="https://github.com/rios0rios0/caddy-l4/actions/workflows/default.yaml">
+        <img src="https://img.shields.io/github/actions/workflow/status/rios0rios0/caddy-l4/default.yaml?branch=main&style=for-the-badge&logo=github" alt="Build Status"/></a>
 </p>
 
 A fork of **Project Conncept**, an experimental Layer 4 app for [Caddy](https://caddyserver.com/). It facilitates composable handling of raw TCP/UDP connections based on properties of the connection or the beginning of the stream.
