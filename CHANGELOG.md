@@ -16,11 +16,13 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ## [Unreleased]
 
-### Changed
-
-- changed the Go module dependencies to their latest versions
-- changed the Go version to `1.26.1` and updated all module dependencies
+## [0.1.0] - 2026-03-12
 
 ### Added
 
 - added GitHub Actions workflow for CI/CD pipeline
+
+### Changed
+
+- changed the Go version to `1.26.1` and updated all module dependencies
+
